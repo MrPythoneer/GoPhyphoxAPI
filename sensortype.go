@@ -3,10 +3,10 @@ package phyphox
 type SensorType string
 
 const (
-	ACCELEROMETER       SensorType = "acc"
-	GYROSCOPE           SensorType = "gyr"
+	ACCELEROMETER       SensorType = "accelerometer"
+	GYROSCOPE           SensorType = "gyroscope"
 	LIGHT               SensorType = "light"
-	PROXIMITY           SensorType = "prox"
-	LINEAR_ACCELERATION SensorType = "lin"
-	MAGNETIC_FIELD      SensorType = "mag"
+	PROXIMITY           SensorType = "proximity"
+	LINEAR_ACCELERATION SensorType = "linear_acceleration"
+	MAGNETIC_FIELD      SensorType = "magnetic_field"
 )
