@@ -26,8 +26,6 @@ func PhyphoxConnect(address string) (*Phyphox, error) {
 		return nil, err
 	}
 
-	println("ConfigRaw ", string(configRaw))
-
 	var config map[string]any
 	err = json.Unmarshal(configRaw, &config)
 	if err != nil {
@@ -70,7 +68,13 @@ func (p *Phyphox) RegisterSensor(sensor SensorType) any {
 
 func (p *Phyphox) Update() error {
 	res, err := p.execute("/get?" + p.query)
-	p.buffer = res
+
+	buffer, ok := res["buffer"].(map[string]any)
+	if !ok {
+		return ErrBufferParse
+	}
+
+	p.buffer = buffer
 
 	return err
 }
