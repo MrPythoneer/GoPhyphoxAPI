@@ -5,17 +5,41 @@ type XYZSensor struct {
 	phyphox *Phyphox
 }
 
-// func (s *XYZSensor) getX() float64 {
-// 	return s.phyphox.getBuffer()[s.prefix+"X"]["buffer"][0]
-// }
+func (s *XYZSensor) GetX() (float64, error) {
+	return s.Get("X")
+}
 
-// func (s *XYZSensor) getY() float64 {
-// 	return s.phyphox.getBuffer()[s.prefix+"Y"]["buffer"][0]
-// }
+func (s *XYZSensor) GetY() (float64, error) {
+	return s.Get("Y")
+}
 
-// func (s *XYZSensor) getZ() float64 {
-// 	return s.phyphox.getBuffer()[s.prefix+"Z"]["buffer"][0]
-// }
+func (s *XYZSensor) GetZ() (float64, error) {
+	return s.Get("Z")
+}
+
+func (s *XYZSensor) Get(axis string) (float64, error) {
+	buffer, ok := s.phyphox.buffer["buffer"].(map[string]any)
+	if !ok {
+		return 0, ErrBufferParse
+	}
+
+	valueb, ok := buffer[s.prefix+axis].(map[string]any)
+	if !ok {
+		return 0, ErrBufferParse
+	}
+
+	values, ok := valueb["buffer"].([]any)
+	if !ok {
+		return 0, ErrBufferParse
+	}
+
+	value, ok := values[0].(float64)
+	if !ok {
+		return 0, ErrBufferParse
+	}
+
+	return value, nil
+}
 
 func (s *XYZSensor) IncludeX() {
 	s.phyphox.query += s.prefix + "X"
