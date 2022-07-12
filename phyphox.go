@@ -16,7 +16,7 @@ type Phyphox struct {
 func PhyphoxConnect(address string) (*Phyphox, error) {
 	address = "http://" + address
 
-	resp, err := http.Get(address)
+	resp, err := http.Get(address + "/config?input")
 	if err != nil {
 		return nil, err
 	}
@@ -25,6 +25,8 @@ func PhyphoxConnect(address string) (*Phyphox, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	println("ConfigRaw ", string(configRaw))
 
 	var config map[string]any
 	err = json.Unmarshal(configRaw, &config)
@@ -40,8 +42,9 @@ func PhyphoxConnect(address string) (*Phyphox, error) {
 
 func (p *Phyphox) RegisterSensor(sensor SensorType) any {
 	found := false
-	for _, v := range p.config["inputs"].([]map[string]any) {
-		if v["source"].(string) == string(sensor) {
+	for _, v := range p.config["inputs"].([]any) {
+		source := v.(map[string]any)["source"]
+		if source.(string) == string(sensor) {
 			found = true
 		}
 	}
@@ -54,7 +57,10 @@ func (p *Phyphox) RegisterSensor(sensor SensorType) any {
 	switch sensor {
 	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
 		return XYZSensor{prefix: prefix, phyphox: p}
-	case LIGHT, PROXIMITY:
+	case LIGHT:
+		prefix = "illum"
+		fallthrough
+	case PROXIMITY:
 		p.query = prefix + "&"
 		return VSensor{prefix: prefix, phyphox: p}
 	}
@@ -62,39 +68,42 @@ func (p *Phyphox) RegisterSensor(sensor SensorType) any {
 	return nil
 }
 
-func (p *Phyphox) Update() (bool, error) {
-	return p.execute("/?get" + p.query)
+func (p *Phyphox) Update() error {
+	res, err := p.execute("/get?" + p.query)
+	p.buffer = res
+
+	return err
 }
 
 func (p *Phyphox) Start() (bool, error) {
-	return p.execute("/control?cmd=start")
+	res, err := p.execute("/control?cmd=start")
+	p.Update()
+	return res["result"].(bool), err
 }
 
 func (p *Phyphox) Stop() (bool, error) {
-	return p.execute("/control?cmd=stop")
+	res, err := p.execute("/control?cmd=stop")
+	return res["result"].(bool), err
 }
 
 func (p *Phyphox) Clear() (bool, error) {
-	return p.execute("clear")
+	res, err := p.execute("/control?cmd=clear")
+	return res["result"].(bool), err
 }
 
-func (p *Phyphox) execute(command string) (bool, error) {
+func (p *Phyphox) execute(command string) (map[string]any, error) {
 	resp, err := http.Get(p.address + command)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	respRaw, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	var result map[string]bool
-	json.Unmarshal(respRaw, &result)
+	var result map[string]any
+	err = json.Unmarshal(respRaw, &result)
 
-	return result["result"], nil
-}
-
-func (p *Phyphox) getBuffer() map[string]map[string][]float64 {
-	return p.buffer["buffer"].(map[string]map[string][]float64)
+	return result, err
 }

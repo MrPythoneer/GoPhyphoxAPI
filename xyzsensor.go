@@ -5,17 +5,17 @@ type XYZSensor struct {
 	phyphox *Phyphox
 }
 
-func (s *XYZSensor) getX() float64 {
-	return s.phyphox.getBuffer()[s.prefix+"X"]["buffer"][0]
-}
+// func (s *XYZSensor) getX() float64 {
+// 	return s.phyphox.getBuffer()[s.prefix+"X"]["buffer"][0]
+// }
 
-func (s *XYZSensor) getY() float64 {
-	return s.phyphox.getBuffer()[s.prefix+"Y"]["buffer"][0]
-}
+// func (s *XYZSensor) getY() float64 {
+// 	return s.phyphox.getBuffer()[s.prefix+"Y"]["buffer"][0]
+// }
 
-func (s *XYZSensor) getZ() float64 {
-	return s.phyphox.getBuffer()[s.prefix+"Z"]["buffer"][0]
-}
+// func (s *XYZSensor) getZ() float64 {
+// 	return s.phyphox.getBuffer()[s.prefix+"Z"]["buffer"][0]
+// }
 
 func (s *XYZSensor) IncludeX() {
 	s.phyphox.query += s.prefix + "X"
