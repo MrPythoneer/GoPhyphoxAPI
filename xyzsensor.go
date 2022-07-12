@@ -37,17 +37,17 @@ func (s *XYZSensor) Get(axis string) (float64, error) {
 }
 
 func (s *XYZSensor) IncludeX() {
-	s.phyphox.query += s.prefix + "X"
+	s.phyphox.query += s.prefix + "X&"
 }
 
 func (s *XYZSensor) IncludeY() {
-	s.phyphox.query += s.prefix + "Y"
+	s.phyphox.query += s.prefix + "Y&"
 }
 
 func (s *XYZSensor) IncludeZ() {
-	s.phyphox.query += s.prefix + "Z"
+	s.phyphox.query += s.prefix + "Z&"
 }
 
 func (s *XYZSensor) IncludeTime() {
-	s.phyphox.query += s.prefix + "_time"
+	s.phyphox.query += s.prefix + "_time&"
 }

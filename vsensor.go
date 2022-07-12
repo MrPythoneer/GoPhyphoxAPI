@@ -23,3 +23,7 @@ func (s *VSensor) Value() (float64, error) {
 
 	return value, nil
 }
+
+func (s *VSensor) IncludeTime() {
+	s.phyphox.query += s.prefix + "_time&"
+}
