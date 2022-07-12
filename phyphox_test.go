@@ -3,6 +3,7 @@ package phyphox
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 func TestVSensor(t *testing.T) {
@@ -66,4 +67,26 @@ func TestXYZSensor(t *testing.T) {
 		t.Fatal(err)
 	}
 	fmt.Println("Z: ", valZ)
+}
+
+func TestStartStop(t *testing.T) {
+	client, err := PhyphoxConnect("192.168.193.215:8080")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		stopped, err := client.Stop()
+		if err != nil {
+			t.Fatal(err)
+		}
+		fmt.Println("Stopped: ", stopped)
+	}()
+
+	started, err := client.Start()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println("Started: ", started)
+
+	time.Sleep(time.Second * 5)
 }
