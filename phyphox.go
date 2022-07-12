@@ -51,16 +51,26 @@ func (p *Phyphox) RegisterSensor(sensor SensorType) any {
 		return nil
 	}
 
-	prefix := string(sensor)
 	switch sensor {
-	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
-		return XYZSensor{prefix: prefix, phyphox: p}
+	case ACCELEROMETER:
+		return XYZSensor{prefix: "acc", phyphox: p}
+
+	case GYROSCOPE:
+		return XYZSensor{prefix: "gyr", phyphox: p}
+
+	case LINEAR_ACCELERATION:
+		return XYZSensor{prefix: "lin", phyphox: p}
+
+	case MAGNETIC_FIELD:
+		return XYZSensor{prefix: "mag", phyphox: p}
+
 	case LIGHT:
-		prefix = "illum"
-		fallthrough
+		p.query += "illum&"
+		return VSensor{prefix: "illum", phyphox: p}
+
 	case PROXIMITY:
-		p.query = prefix + "&"
-		return VSensor{prefix: prefix, phyphox: p}
+		p.query += "prox&"
+		return VSensor{prefix: "prox", phyphox: p}
 	}
 
 	return nil
