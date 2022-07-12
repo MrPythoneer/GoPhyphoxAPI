@@ -11,8 +11,12 @@ func TestVSensor(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer client.Stop()
 
-	lightSensor := client.RegisterSensor(LIGHT).(VSensor)
+	lightSensor, ok := client.RegisterSensor(LIGHT).(VSensor)
+	if !ok {
+		t.Fatal("There is no such a sensor")
+	}
 
 	_, err = client.Start()
 	if err != nil {
@@ -25,11 +29,6 @@ func TestVSensor(t *testing.T) {
 	}
 
 	fmt.Println("LIGHT: ", val)
-
-	_, err = client.Stop()
-	if err != nil {
-		t.Fatal(err)
-	}
 }
 
 func TestXYZSensor(t *testing.T) {
