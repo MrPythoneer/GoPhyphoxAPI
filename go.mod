@@ -1,3 +1,3 @@
-module github.com/MrPythoneer/gophyphox
+module github.com/MrPythoneer/phyphox
 
 go 1.18
