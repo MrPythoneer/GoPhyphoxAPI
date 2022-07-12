@@ -3,23 +3,25 @@ package phyphox
 import (
 	"encoding/json"
 	"io"
-	"net"
+	"net/http"
 )
 
 type Phyphox struct {
-	conn   net.Conn
-	config map[string]any
-	buffer map[string]any
-	query  string
+	address string
+	config  map[string]any
+	buffer  map[string]any
+	query   string
 }
 
 func PhyphoxConnect(address string) (*Phyphox, error) {
-	conn, err := net.Dial("tcp", address)
+	address = "http://" + address
+
+	resp, err := http.Get(address)
 	if err != nil {
 		return nil, err
 	}
 
-	configRaw, err := io.ReadAll(conn)
+	configRaw, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +33,7 @@ func PhyphoxConnect(address string) (*Phyphox, error) {
 	}
 
 	phyphox := new(Phyphox)
-	phyphox.conn = conn
+	phyphox.address = address
 	phyphox.config = config
 	return phyphox, nil
 }
@@ -58,6 +60,39 @@ func (p *Phyphox) RegisterSensor(sensor SensorType) any {
 	}
 
 	return nil
+}
+
+func (p *Phyphox) Update() (bool, error) {
+	return p.execute("/?get" + p.query)
+}
+
+func (p *Phyphox) Start() (bool, error) {
+	return p.execute("/control?cmd=start")
+}
+
+func (p *Phyphox) Stop() (bool, error) {
+	return p.execute("/control?cmd=stop")
+}
+
+func (p *Phyphox) Clear() (bool, error) {
+	return p.execute("clear")
+}
+
+func (p *Phyphox) execute(command string) (bool, error) {
+	resp, err := http.Get(p.address + command)
+	if err != nil {
+		return false, err
+	}
+
+	respRaw, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return false, err
+	}
+
+	var result map[string]bool
+	json.Unmarshal(respRaw, &result)
+
+	return result["result"], nil
 }
 
 func (p *Phyphox) getBuffer() map[string]map[string][]float64 {
