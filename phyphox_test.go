@@ -6,22 +6,24 @@ import (
 	"time"
 )
 
+const HostAddr string = "192.168.193.215:8080"
+
 func TestVSensor(t *testing.T) {
-	client, err := PhyphoxConnect("192.168.193.215:8080")
+	experiment, err := PhyphoxConnect(HostAddr)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	lightSensor, err := client.RegisterVSensor(LIGHT)
+	lightSensor, err := experiment.RegisterVSensor(LIGHT)
 	if err != nil {
 		t.Error(err)
 	}
 
-	_, err = client.Start()
+	_, err = experiment.Start()
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.Stop()
+	defer experiment.Stop()
 
 	val, ok := lightSensor.Value()
 	if !ok {
@@ -32,12 +34,12 @@ func TestVSensor(t *testing.T) {
 }
 
 func TestXYZSensor(t *testing.T) {
-	client, err := PhyphoxConnect("192.168.193.215:8080")
+	experiment, err := PhyphoxConnect(HostAddr)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	magSensor, err := client.RegisterXYZSensor(MAGNETIC_FIELD)
+	magSensor, err := experiment.RegisterXYZSensor(MAGNETIC_FIELD)
 	if err != nil {
 		t.Error(err)
 	}
@@ -45,25 +47,25 @@ func TestXYZSensor(t *testing.T) {
 	magSensor.IncludeX()
 	magSensor.IncludeZ()
 
-	_, err = client.Start()
+	_, err = experiment.Start()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	defer client.Stop()
+	defer experiment.Stop()
 
-	valX, ok := magSensor.GetX()
+	valX, ok := magSensor.X()
 	if !ok {
 		t.Fatal("Could not receive X")
 	}
 	fmt.Println("X: ", valX)
 
-	_, ok = magSensor.GetY()
+	_, ok = magSensor.Y()
 	if !ok {
 		fmt.Println("Y cannot be received. Correct")
 	}
 
-	valZ, ok := magSensor.GetZ()
+	valZ, ok := magSensor.Z()
 	if !ok {
 		t.Fatal("Could not receive Z")
 	}
@@ -71,19 +73,19 @@ func TestXYZSensor(t *testing.T) {
 }
 
 func TestStartStop(t *testing.T) {
-	client, err := PhyphoxConnect("192.168.193.215:8080")
+	experiment, err := PhyphoxConnect(HostAddr)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer func() {
-		stopped, err := client.Stop()
+		stopped, err := experiment.Stop()
 		if err != nil {
 			t.Fatal(err)
 		}
 		fmt.Println("Stopped: ", stopped)
 	}()
 
-	started, err := client.Start()
+	started, err := experiment.Start()
 	if err != nil {
 		t.Fatal(err)
 	}
