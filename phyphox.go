@@ -45,14 +45,7 @@ func PhyphoxConnect(address string) (*Phyphox, error) {
 }
 
 func (p *Phyphox) RegisterSensor(sensor SensorType) (any, bool) {
-	found := false
-	for _, v := range p.Sensors {
-		if v == string(sensor) {
-			found = true
-		}
-	}
-
-	if !found {
+	if !p.HasSensor(sensor) {
 		return nil, false
 	}
 
@@ -66,6 +59,16 @@ func (p *Phyphox) RegisterSensor(sensor SensorType) (any, bool) {
 	}
 
 	return nil, false
+}
+
+func (p *Phyphox) HasSensor(sensor SensorType) bool {
+	for _, v := range p.Sensors {
+		if v == string(sensor) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (p *Phyphox) Update() error {
