@@ -18,22 +18,22 @@ func (s *XYZSensor) Get(axis string) (float64, bool) {
 }
 
 // Returns the X value of the sensor from phyphox SensorsData
-func (s *XYZSensor) GetX() (float64, bool) {
+func (s *XYZSensor) X() (float64, bool) {
 	return s.Get("X")
 }
 
 // Returns the Y value of the sensor from phyphox SensorsData
-func (s *XYZSensor) GetY() (float64, bool) {
+func (s *XYZSensor) Y() (float64, bool) {
 	return s.Get("Y")
 }
 
 // Returns the Z value of the sensor from phyphox SensorsData
-func (s *XYZSensor) GetZ() (float64, bool) {
+func (s *XYZSensor) Z() (float64, bool) {
 	return s.Get("Z")
 }
 
 // Returns the Time value of the sensor from phyphox SensorsData
-func (s *XYZSensor) GetTime() (float64, bool) {
+func (s *XYZSensor) Time() (float64, bool) {
 	return s.Get("_time")
 }
 
