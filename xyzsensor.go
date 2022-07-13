@@ -5,25 +5,25 @@ type XYZSensor struct {
 	phyphox *Phyphox
 }
 
-func (s *XYZSensor) GetX() (float64, error) {
+func (s *XYZSensor) GetX() (float64, bool) {
 	return s.Get("X")
 }
 
-func (s *XYZSensor) GetY() (float64, error) {
+func (s *XYZSensor) GetY() (float64, bool) {
 	return s.Get("Y")
 }
 
-func (s *XYZSensor) GetZ() (float64, error) {
+func (s *XYZSensor) GetZ() (float64, bool) {
 	return s.Get("Z")
 }
 
-func (s *XYZSensor) Get(axis string) (float64, error) {
+func (s *XYZSensor) Get(axis string) (float64, bool) {
 	value, ok := s.phyphox.SensorsData[s.prefix+axis]
 	if !ok {
-		return 0, ErrBufferVarNotExist
+		return 0, false
 	}
 
-	return value, nil
+	return value, true
 }
 
 func (s *XYZSensor) IncludeX() {

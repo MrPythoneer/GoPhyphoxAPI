@@ -23,9 +23,9 @@ func TestVSensor(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	val, err := lightSensor.Value()
-	if err != nil {
-		t.Fatal(err)
+	val, ok := lightSensor.Value()
+	if !ok {
+		t.Fatal("Could not receive value")
 	}
 
 	fmt.Println("LIGHT: ", val)
@@ -50,20 +50,20 @@ func TestXYZSensor(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	valX, err := magSensor.GetX()
-	if err != nil {
-		t.Fatal(err)
+	valX, ok := magSensor.GetX()
+	if !ok {
+		t.Fatal("Could not receive X")
 	}
 	fmt.Println("X: ", valX)
 
-	_, err = magSensor.GetY()
-	if err != nil {
+	_, ok = magSensor.GetY()
+	if !ok {
 		fmt.Println("Y cannot be received. Correct")
 	}
 
-	valZ, err := magSensor.GetZ()
-	if err != nil {
-		t.Fatal(err)
+	valZ, ok := magSensor.GetZ()
+	if !ok {
+		t.Fatal("Could not receive Z")
 	}
 	fmt.Println("Z: ", valZ)
 }

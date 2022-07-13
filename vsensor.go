@@ -5,12 +5,12 @@ type VSensor struct {
 	phyphox *Phyphox
 }
 
-func (s *VSensor) Value() (float64, error) {
+func (s *VSensor) Value() (float64, bool) {
 	value, ok := s.phyphox.SensorsData[s.prefix]
 	if !ok {
-		return 0, ErrBufferVarNotExist
+		return 0, false
 	}
-	return value, nil
+	return value, true
 }
 
 func (s *VSensor) IncludeTime() {
