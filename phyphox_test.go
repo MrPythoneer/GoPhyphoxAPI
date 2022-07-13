@@ -13,17 +13,18 @@ func TestVSensor(t *testing.T) {
 	}
 	defer client.Stop()
 
-	lightSensor, ok := client.RegisterSensor(LIGHT).(VSensor)
+	lightSensor, ok := client.RegisterSensor(LIGHT)
 	if !ok {
 		t.Fatal("There is no such a sensor")
 	}
+	lightVSensor := lightSensor.(VSensor)
 
 	_, err = client.Start()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	val, ok := lightSensor.Value()
+	val, ok := lightVSensor.Value()
 	if !ok {
 		t.Fatal("Could not receive value")
 	}
@@ -38,30 +39,32 @@ func TestXYZSensor(t *testing.T) {
 	}
 	defer client.Stop()
 
-	magSensor, ok := client.RegisterSensor(MAGNETIC_FIELD).(XYZSensor)
+	magSensor, ok := client.RegisterSensor(MAGNETIC_FIELD)
 	if !ok {
 		t.Fatalf("The sensor is not a XYZSensor.")
 	}
-	magSensor.IncludeX()
-	magSensor.IncludeZ()
+	magXYZSensor := magSensor.(XYZSensor)
+
+	magXYZSensor.IncludeX()
+	magXYZSensor.IncludeZ()
 
 	_, err = client.Start()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	valX, ok := magSensor.GetX()
+	valX, ok := magXYZSensor.GetX()
 	if !ok {
 		t.Fatal("Could not receive X")
 	}
 	fmt.Println("X: ", valX)
 
-	_, ok = magSensor.GetY()
+	_, ok = magXYZSensor.GetY()
 	if !ok {
 		fmt.Println("Y cannot be received. Correct")
 	}
 
-	valZ, ok := magSensor.GetZ()
+	valZ, ok := magXYZSensor.GetZ()
 	if !ok {
 		t.Fatal("Could not receive Z")
 	}

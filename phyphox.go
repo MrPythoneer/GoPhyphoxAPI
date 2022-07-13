@@ -44,7 +44,7 @@ func PhyphoxConnect(address string) (*Phyphox, error) {
 	return phyphox, nil
 }
 
-func (p *Phyphox) RegisterSensor(sensor SensorType) any {
+func (p *Phyphox) RegisterSensor(sensor SensorType) (any, bool) {
 	found := false
 	for _, v := range p.Sensors {
 		if v == string(sensor) {
@@ -53,19 +53,19 @@ func (p *Phyphox) RegisterSensor(sensor SensorType) any {
 	}
 
 	if !found {
-		return nil
+		return nil, false
 	}
 
 	prefix := sensor.Prefix()
 	switch sensor {
 	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
-		return XYZSensor{prefix: prefix, phyphox: p}
+		return XYZSensor{prefix: prefix, phyphox: p}, true
 	case LIGHT, PROXIMITY:
 		p.query += prefix + "&"
-		return VSensor{prefix: prefix, phyphox: p}
+		return VSensor{prefix: prefix, phyphox: p}, true
 	}
 
-	return nil
+	return nil, false
 }
 
 func (p *Phyphox) Update() error {
