@@ -13,6 +13,7 @@ type Phyphox struct {
 	SensorsData map[string]float64
 }
 
+// Connects to the remote experiment at the given address
 func PhyphoxConnect(address string) (*Phyphox, error) {
 	address = "http://" + address
 
@@ -44,6 +45,9 @@ func PhyphoxConnect(address string) (*Phyphox, error) {
 	return phyphox, nil
 }
 
+// Returns VSensor representing the sensor in the experiment.
+// Since the sensor has only one variable, it's automatically
+// going to be fetched with Update()
 func (p *Phyphox) RegisterVSensor(sensor SensorType) (*VSensor, error) {
 	if !p.HasSensor(sensor) {
 		return nil, &ErrSensorNotUsed{sensor}
@@ -53,7 +57,7 @@ func (p *Phyphox) RegisterVSensor(sensor SensorType) (*VSensor, error) {
 	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
 		return nil, &ErrSensorWrongType{sensor, "VSensor"}
 	case LIGHT, PROXIMITY:
-		prefix := sensor.Prefix()
+		prefix := sensor.prefix()
 		p.query += prefix + "&"
 		return &VSensor{prefix: prefix, phyphox: p}, nil
 	}
@@ -61,6 +65,10 @@ func (p *Phyphox) RegisterVSensor(sensor SensorType) (*VSensor, error) {
 	return nil, &ErrSensorUnknown{sensor}
 }
 
+// Returns VSensor representing the sensor in the experiment.
+// Since the sensor has several variables, none will be fetched
+// with Update(). In order to fetch data from the sensor,
+// IncludeX, IncludeY or IncludeZ should be called.
 func (p *Phyphox) RegisterXYZSensor(sensor SensorType) (*XYZSensor, error) {
 	if !p.HasSensor(sensor) {
 		return nil, &ErrSensorNotUsed{sensor}
@@ -69,7 +77,7 @@ func (p *Phyphox) RegisterXYZSensor(sensor SensorType) (*XYZSensor, error) {
 	switch sensor {
 	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
 		return &XYZSensor{
-			prefix:  sensor.Prefix(),
+			prefix:  sensor.prefix(),
 			phyphox: p,
 		}, nil
 	case LIGHT, PROXIMITY:
@@ -79,12 +87,22 @@ func (p *Phyphox) RegisterXYZSensor(sensor SensorType) (*XYZSensor, error) {
 	return nil, &ErrSensorUnknown{sensor}
 }
 
+/*
+Returns XYZSensor or VSensor representing the sensor in the experiment.
+
+Since VSensor has only one variable, it's automatically going to be fetched
+with Update()
+
+Since XYZSensor has several variables, none will be fetched with Update().
+In order to fetch data from the sensor, IncludeX, IncludeY or IncludeZ should
+be called.
+*/
 func (p *Phyphox) RegisterSensor(sensor SensorType) (any, error) {
 	if !p.HasSensor(sensor) {
 		return nil, &ErrSensorNotUsed{sensor}
 	}
 
-	prefix := sensor.Prefix()
+	prefix := sensor.prefix()
 	switch sensor {
 	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
 		return &XYZSensor{prefix: prefix, phyphox: p}, nil
@@ -96,6 +114,8 @@ func (p *Phyphox) RegisterSensor(sensor SensorType) (any, error) {
 	return nil, &ErrSensorUnknown{sensor}
 }
 
+// Returns true if the experiment uses the given
+// sensor type, otheriwse, false will be returned
 func (p *Phyphox) HasSensor(sensor SensorType) bool {
 	for _, v := range p.Sensors {
 		if v == string(sensor) {
@@ -106,6 +126,8 @@ func (p *Phyphox) HasSensor(sensor SensorType) bool {
 	return false
 }
 
+// Requests the remote host for the latest data.
+// The data will be saved to the SensorsData field
 func (p *Phyphox) Update() error {
 	res, err := p.execute("/get?" + p.query)
 
@@ -139,22 +161,27 @@ func (p *Phyphox) Update() error {
 	return err
 }
 
+// Starts all measuring
 func (p *Phyphox) Start() (bool, error) {
 	res, err := p.execute("/control?cmd=start")
 	p.Update()
 	return res["result"].(bool), err
 }
 
+// Stops all measuring
 func (p *Phyphox) Stop() (bool, error) {
 	res, err := p.execute("/control?cmd=stop")
 	return res["result"].(bool), err
 }
 
+// Clears the experiment buffer
 func (p *Phyphox) Clear() (bool, error) {
 	res, err := p.execute("/control?cmd=clear")
 	return res["result"].(bool), err
 }
 
+// Executes some remote command on the host.
+// Returns the JSON-like result of the command
 func (p *Phyphox) execute(command string) (map[string]any, error) {
 	resp, err := http.Get(p.address + command)
 	if err != nil {

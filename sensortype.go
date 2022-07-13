@@ -1,5 +1,6 @@
 package phyphox
 
+// Type of the sensor used in the experiment
 type SensorType string
 
 const (
@@ -11,7 +12,8 @@ const (
 	MAGNETIC_FIELD      SensorType = "magnetic_field"
 )
 
-func (st SensorType) Prefix() string {
+// Variable that denotes name of the sensor in the JSON buffer
+func (st SensorType) prefix() string {
 	switch st {
 	case ACCELEROMETER:
 		return "acc"
