@@ -17,7 +17,7 @@ type Phyphox struct {
 func PhyphoxConnect(address string) (*Phyphox, error) {
 	address = "http://" + address
 
-	resp, err := http.Get(address + "/config?input")
+	resp, err := http.Get(address + "/config")
 	if err != nil {
 		return nil, err
 	}
