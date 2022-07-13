@@ -33,25 +33,25 @@ func (s *XYZSensor) Get(axis string) (float64, bool) {
 }
 
 // Next Update() calls will fetch
-// X value form the sensor
+// the X value form the sensor
 func (s *XYZSensor) IncludeX() {
 	s.phyphox.query += s.prefix + "X&"
 }
 
 // Next Update() calls will fetch
-// Y value form the sensor
+// the Y value form the sensor
 func (s *XYZSensor) IncludeY() {
 	s.phyphox.query += s.prefix + "Y&"
 }
 
 // Next Update() calls will fetch
-// Z value form the sensor
+// the Z value form the sensor
 func (s *XYZSensor) IncludeZ() {
 	s.phyphox.query += s.prefix + "Z&"
 }
 
 // Next Update() calls will fetch all the data
-// from the sensor
+// from the sensor, except for time
 func (s *XYZSensor) IncludeAll() {
 	s.phyphox.query += s.prefix + "X&" +
 		s.prefix + "Y&" +
