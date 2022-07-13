@@ -15,22 +15,22 @@ type ErrSensorWrongType struct {
 	expected string
 }
 
+func (e *ErrSensorWrongType) Error() string {
+	return fmt.Sprintf("wrong type of sensors %s: expected %s", e.t, e.expected)
+}
+
 // The sensor type does not match any known
 type ErrSensorUnknown struct {
 	t SensorType
 }
 
+func (e *ErrSensorUnknown) Error() string {
+	return fmt.Sprintf("unknown type of sensor (%s)", e.t)
+}
+
 // The experiment does not use such a sensor
 type ErrSensorNotUsed struct {
 	t SensorType
-}
-
-func (e *ErrSensorWrongType) Error() string {
-	return fmt.Sprintf("wrong type of sensors %s: expected %s", e.t, e.expected)
-}
-
-func (e *ErrSensorUnknown) Error() string {
-	return fmt.Sprintf("unknown type of sensor (%s)", e.t)
 }
 
 func (e *ErrSensorNotUsed) Error() string {
