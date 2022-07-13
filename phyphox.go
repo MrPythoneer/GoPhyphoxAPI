@@ -10,7 +10,7 @@ type Phyphox struct {
 	address     string
 	query       string
 	config      map[string]any
-	sensorsData map[string]float64
+	SensorsData map[string]float64
 }
 
 func PhyphoxConnect(address string) (*Phyphox, error) {
@@ -91,7 +91,7 @@ func (p *Phyphox) Update() error {
 		data[k] = value
 	}
 
-	p.sensorsData = data
+	p.SensorsData = data
 
 	return err
 }
