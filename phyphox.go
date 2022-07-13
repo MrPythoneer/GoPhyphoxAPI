@@ -44,6 +44,39 @@ func PhyphoxConnect(address string) (*Phyphox, error) {
 	return phyphox, nil
 }
 
+func (p *Phyphox) RegisterVSensor(sensorType SensorType) (VSensor, bool) {
+	if !p.HasSensor(sensorType) {
+		return VSensor{}, false
+	}
+
+	switch sensorType {
+	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
+		return VSensor{}, false
+	case LIGHT, PROXIMITY:
+		prefix := sensorType.Prefix()
+		p.query += prefix + "&"
+		return VSensor{prefix: prefix, phyphox: p}, true
+	}
+
+	return VSensor{}, false
+}
+
+func (p *Phyphox) RegisterXYZSensor(sensorType SensorType) (XYZSensor, bool) {
+	if !p.HasSensor(sensorType) {
+		return XYZSensor{}, false
+	}
+
+	switch sensorType {
+	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
+		prefix := sensorType.Prefix()
+		return XYZSensor{prefix: prefix, phyphox: p}, true
+	case LIGHT, PROXIMITY:
+		return XYZSensor{}, false
+	}
+
+	return XYZSensor{}, false
+}
+
 func (p *Phyphox) RegisterSensor(sensor SensorType) (any, bool) {
 	if !p.HasSensor(sensor) {
 		return nil, false
