@@ -11,17 +11,17 @@ func TestVSensor(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.Stop()
 
-	lightSensor, ok := client.RegisterVSensor(LIGHT)
-	if !ok {
-		t.Fatal("There is no such a sensor")
+	lightSensor, err := client.RegisterVSensor(LIGHT)
+	if err != nil {
+		t.Error(err)
 	}
 
 	_, err = client.Start()
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer client.Stop()
 
 	val, ok := lightSensor.Value()
 	if !ok {
@@ -36,11 +36,10 @@ func TestXYZSensor(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.Stop()
 
-	magSensor, ok := client.RegisterXYZSensor(MAGNETIC_FIELD)
-	if !ok {
-		t.Fatalf("The sensor is not a XYZSensor.")
+	magSensor, err := client.RegisterXYZSensor(MAGNETIC_FIELD)
+	if err != nil {
+		t.Error(err)
 	}
 
 	magSensor.IncludeX()
@@ -50,6 +49,8 @@ func TestXYZSensor(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	defer client.Stop()
 
 	valX, ok := magSensor.GetX()
 	if !ok {

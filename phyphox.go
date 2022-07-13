@@ -44,56 +44,56 @@ func PhyphoxConnect(address string) (*Phyphox, error) {
 	return phyphox, nil
 }
 
-func (p *Phyphox) RegisterVSensor(sensorType SensorType) (*VSensor, bool) {
-	if !p.HasSensor(sensorType) {
-		return nil, false
+func (p *Phyphox) RegisterVSensor(sensor SensorType) (*VSensor, error) {
+	if !p.HasSensor(sensor) {
+		return nil, &ErrSensorNotUsed{sensor}
 	}
 
-	switch sensorType {
+	switch sensor {
 	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
-		return nil, false
+		return nil, &ErrSensorWrongType{sensor, "VSensor"}
 	case LIGHT, PROXIMITY:
-		prefix := sensorType.Prefix()
+		prefix := sensor.Prefix()
 		p.query += prefix + "&"
-		return &VSensor{prefix: prefix, phyphox: p}, true
+		return &VSensor{prefix: prefix, phyphox: p}, nil
 	}
 
-	return nil, false
+	return nil, &ErrSensorUnknown{sensor}
 }
 
-func (p *Phyphox) RegisterXYZSensor(sensorType SensorType) (*XYZSensor, bool) {
-	if !p.HasSensor(sensorType) {
-		return nil, false
+func (p *Phyphox) RegisterXYZSensor(sensor SensorType) (*XYZSensor, error) {
+	if !p.HasSensor(sensor) {
+		return nil, &ErrSensorNotUsed{sensor}
 	}
 
-	switch sensorType {
+	switch sensor {
 	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
 		return &XYZSensor{
-			prefix:  sensorType.Prefix(),
+			prefix:  sensor.Prefix(),
 			phyphox: p,
-		}, true
+		}, nil
 	case LIGHT, PROXIMITY:
-		return nil, false
+		return nil, &ErrSensorWrongType{sensor, "XYZSensor"}
 	}
 
-	return nil, false
+	return nil, &ErrSensorUnknown{sensor}
 }
 
-func (p *Phyphox) RegisterSensor(sensor SensorType) (any, bool) {
+func (p *Phyphox) RegisterSensor(sensor SensorType) (any, error) {
 	if !p.HasSensor(sensor) {
-		return nil, false
+		return nil, &ErrSensorNotUsed{sensor}
 	}
 
 	prefix := sensor.Prefix()
 	switch sensor {
 	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
-		return &XYZSensor{prefix: prefix, phyphox: p}, true
+		return &XYZSensor{prefix: prefix, phyphox: p}, nil
 	case LIGHT, PROXIMITY:
 		p.query += prefix + "&"
-		return &VSensor{prefix: prefix, phyphox: p}, true
+		return &VSensor{prefix: prefix, phyphox: p}, nil
 	}
 
-	return nil, false
+	return nil, &ErrSensorUnknown{sensor}
 }
 
 func (p *Phyphox) HasSensor(sensor SensorType) bool {
