@@ -9,7 +9,7 @@ import (
 type Phyphox struct {
 	address     string
 	query       string
-	config      map[string]any
+	Sensors     []string
 	SensorsData map[string]float64
 }
 
@@ -32,17 +32,22 @@ func PhyphoxConnect(address string) (*Phyphox, error) {
 		return nil, err
 	}
 
+	sensors := make([]string, 0)
+	for _, v := range config["inputs"].([]any) {
+		sensor := v.(map[string]any)["source"]
+		sensors = append(sensors, sensor.(string))
+	}
+
 	phyphox := new(Phyphox)
 	phyphox.address = address
-	phyphox.config = config
+	phyphox.Sensors = sensors
 	return phyphox, nil
 }
 
 func (p *Phyphox) RegisterSensor(sensor SensorType) any {
 	found := false
-	for _, v := range p.config["inputs"].([]any) {
-		source := v.(map[string]any)["source"]
-		if source.(string) == string(sensor) {
+	for _, v := range p.Sensors {
+		if v == string(sensor) {
 			found = true
 		}
 	}
