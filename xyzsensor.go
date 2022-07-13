@@ -38,6 +38,12 @@ func (s *XYZSensor) IncludeZ() {
 	s.phyphox.query += s.prefix + "Z&"
 }
 
+func (s *XYZSensor) IncludeAll() {
+	s.phyphox.query += s.prefix + "X&" +
+		s.prefix + "Y&" +
+		s.prefix + "Z&"
+}
+
 func (s *XYZSensor) IncludeTime() {
 	s.phyphox.query += s.prefix + "_time&"
 }
