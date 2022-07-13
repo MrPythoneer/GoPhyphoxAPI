@@ -42,7 +42,7 @@ func TestVSensor(t *testing.T) {
 
 	lightSensor, err := experiment.RegisterVSensor(LIGHT)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	_, err = experiment.Start()
@@ -67,7 +67,7 @@ func TestXYZSensor(t *testing.T) {
 
 	magSensor, err := experiment.RegisterXYZSensor(MAGNETIC_FIELD)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	magSensor.IncludeX()
