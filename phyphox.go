@@ -45,7 +45,7 @@ func PhyphoxConnect(address string) (*Phyphox, error) {
 	return phyphox, nil
 }
 
-// Returns VSensor representing the sensor in the experiment.
+// Returns VSensor representing a sensor in the experiment.
 // Since the sensor has only one variable, it's automatically
 // going to be fetched with Update()
 func (p *Phyphox) RegisterVSensor(sensor SensorType) (*VSensor, error) {
@@ -65,7 +65,7 @@ func (p *Phyphox) RegisterVSensor(sensor SensorType) (*VSensor, error) {
 	return nil, &ErrSensorUnknown{sensor}
 }
 
-// Returns VSensor representing the sensor in the experiment.
+// Returns VSensor representing a sensor in the experiment.
 // Since the sensor has several variables, none will be fetched
 // with Update(). In order to fetch data from the sensor,
 // IncludeX, IncludeY or IncludeZ should be called.
@@ -88,7 +88,7 @@ func (p *Phyphox) RegisterXYZSensor(sensor SensorType) (*XYZSensor, error) {
 }
 
 /*
-Returns XYZSensor or VSensor representing the sensor in the experiment.
+Returns XYZSensor or VSensor representing a sensor in the experiment.
 
 Since VSensor has only one variable, it's automatically going to be fetched
 with Update()
@@ -161,14 +161,16 @@ func (p *Phyphox) Update() error {
 	return err
 }
 
-// Starts all measuring
+// Starts measuring.
+//
+// By default, Update() is called automatically
 func (p *Phyphox) Start() (bool, error) {
 	res, err := p.execute("/control?cmd=start")
 	p.Update()
 	return res["result"].(bool), err
 }
 
-// Stops all measuring
+// Stops measuring
 func (p *Phyphox) Stop() (bool, error) {
 	res, err := p.execute("/control?cmd=stop")
 	return res["result"].(bool), err
