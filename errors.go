@@ -5,18 +5,22 @@ import (
 	"fmt"
 )
 
+// JSON-formatted buffer cannot be parsed correctly
 var ErrBufferParse = errors.New("cannot parse the buffer correctly")
 var ErrBufferVarNotExist = errors.New("buffer does not contain this variable")
 
+// The given sensor type does not match the type of the sensor returned by RegisterXYZSensor or RegisterVSensor
 type ErrSensorWrongType struct {
 	t        SensorType
 	expected string
 }
 
+// The sensor type does not match any known
 type ErrSensorUnknown struct {
 	t SensorType
 }
 
+// The experiment does not use such a sensor
 type ErrSensorNotUsed struct {
 	t SensorType
 }
