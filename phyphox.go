@@ -44,37 +44,39 @@ func PhyphoxConnect(address string) (*Phyphox, error) {
 	return phyphox, nil
 }
 
-func (p *Phyphox) RegisterVSensor(sensorType SensorType) (VSensor, bool) {
+func (p *Phyphox) RegisterVSensor(sensorType SensorType) (*VSensor, bool) {
 	if !p.HasSensor(sensorType) {
-		return VSensor{}, false
+		return nil, false
 	}
 
 	switch sensorType {
 	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
-		return VSensor{}, false
+		return nil, false
 	case LIGHT, PROXIMITY:
 		prefix := sensorType.Prefix()
 		p.query += prefix + "&"
-		return VSensor{prefix: prefix, phyphox: p}, true
+		return &VSensor{prefix: prefix, phyphox: p}, true
 	}
 
-	return VSensor{}, false
+	return nil, false
 }
 
-func (p *Phyphox) RegisterXYZSensor(sensorType SensorType) (XYZSensor, bool) {
+func (p *Phyphox) RegisterXYZSensor(sensorType SensorType) (*XYZSensor, bool) {
 	if !p.HasSensor(sensorType) {
-		return XYZSensor{}, false
+		return nil, false
 	}
 
 	switch sensorType {
 	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
-		prefix := sensorType.Prefix()
-		return XYZSensor{prefix: prefix, phyphox: p}, true
+		return &XYZSensor{
+			prefix:  sensorType.Prefix(),
+			phyphox: p,
+		}, true
 	case LIGHT, PROXIMITY:
-		return XYZSensor{}, false
+		return nil, false
 	}
 
-	return XYZSensor{}, false
+	return nil, false
 }
 
 func (p *Phyphox) RegisterSensor(sensor SensorType) (any, bool) {
@@ -85,10 +87,10 @@ func (p *Phyphox) RegisterSensor(sensor SensorType) (any, bool) {
 	prefix := sensor.Prefix()
 	switch sensor {
 	case ACCELEROMETER, GYROSCOPE, LINEAR_ACCELERATION, MAGNETIC_FIELD:
-		return XYZSensor{prefix: prefix, phyphox: p}, true
+		return &XYZSensor{prefix: prefix, phyphox: p}, true
 	case LIGHT, PROXIMITY:
 		p.query += prefix + "&"
-		return VSensor{prefix: prefix, phyphox: p}, true
+		return &VSensor{prefix: prefix, phyphox: p}, true
 	}
 
 	return nil, false
