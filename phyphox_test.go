@@ -8,6 +8,32 @@ import (
 
 const HostAddr string = "192.168.193.215:8080"
 
+// Example with little error handling; to
+// demonstrate the API in a simple form
+func TestExample(t *testing.T) {
+	experiment, err := PhyphoxConnect(HostAddr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	sensor, _ := experiment.RegisterVSensor(LIGHT)
+	sensor.IncludeTime()
+
+	experiment.Start()
+	defer experiment.Stop()
+
+	var lastTime float64 = 0
+	for {
+		experiment.Fetch()
+		time, _ := sensor.Time()
+		if time != lastTime {
+			light, _ := sensor.Value()
+			fmt.Println(time, light)
+			lastTime = time
+		}
+	}
+}
+
 func TestVSensor(t *testing.T) {
 	experiment, err := PhyphoxConnect(HostAddr)
 	if err != nil {
