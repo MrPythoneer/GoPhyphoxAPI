@@ -6,21 +6,10 @@ type VSensor struct {
 }
 
 func (s *VSensor) Value() (float64, error) {
-	valueb, ok := s.phyphox.buffer[s.prefix].(map[string]any)
+	value, ok := s.phyphox.sensorsData[s.prefix]
 	if !ok {
-		return 0, ErrBufferParse
+		return 0, ErrBufferVarNotExist
 	}
-
-	values, ok := valueb["buffer"].([]any)
-	if !ok {
-		return 0, ErrBufferParse
-	}
-
-	value, ok := values[0].(float64)
-	if !ok {
-		return 0, ErrBufferParse
-	}
-
 	return value, nil
 }
 

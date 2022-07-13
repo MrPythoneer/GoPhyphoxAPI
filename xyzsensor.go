@@ -18,19 +18,9 @@ func (s *XYZSensor) GetZ() (float64, error) {
 }
 
 func (s *XYZSensor) Get(axis string) (float64, error) {
-	valueb, ok := s.phyphox.buffer[s.prefix+axis].(map[string]any)
+	value, ok := s.phyphox.sensorsData[s.prefix+axis]
 	if !ok {
-		return 0, ErrBufferParse
-	}
-
-	values, ok := valueb["buffer"].([]any)
-	if !ok {
-		return 0, ErrBufferParse
-	}
-
-	value, ok := values[0].(float64)
-	if !ok {
-		return 0, ErrBufferParse
+		return 0, ErrBufferVarNotExist
 	}
 
 	return value, nil

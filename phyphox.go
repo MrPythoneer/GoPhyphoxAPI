@@ -7,10 +7,10 @@ import (
 )
 
 type Phyphox struct {
-	address string
-	config  map[string]any
-	buffer  map[string]any
-	query   string
+	address     string
+	query       string
+	config      map[string]any
+	sensorsData map[string]float64
 }
 
 func PhyphoxConnect(address string) (*Phyphox, error) {
@@ -71,7 +71,27 @@ func (p *Phyphox) Update() error {
 		return ErrBufferParse
 	}
 
-	p.buffer = buffer
+	data := make(map[string]float64, 0)
+	for k, v := range buffer {
+		variable, ok := v.(map[string]any)
+		if !ok {
+			return ErrBufferParse
+		}
+
+		varbuff, ok := variable["buffer"].([]any)
+		if !ok {
+			return ErrBufferParse
+		}
+
+		value, ok := varbuff[0].(float64)
+		if !ok {
+			return ErrBufferParse
+		}
+
+		data[k] = value
+	}
+
+	p.sensorsData = data
 
 	return err
 }
