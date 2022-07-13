@@ -7,6 +7,16 @@ type XYZSensor struct {
 	phyphox *Phyphox
 }
 
+// Returns the value of the sensor from phyphox SensorsData
+func (s *XYZSensor) Get(axis string) (float64, bool) {
+	value, ok := s.phyphox.SensorsData[s.prefix+axis]
+	if !ok {
+		return 0, false
+	}
+
+	return value, true
+}
+
 // Returns the X value of the sensor from phyphox SensorsData
 func (s *XYZSensor) GetX() (float64, bool) {
 	return s.Get("X")
@@ -22,14 +32,9 @@ func (s *XYZSensor) GetZ() (float64, bool) {
 	return s.Get("Z")
 }
 
-// Returns the value of the sensor from phyphox SensorsData
-func (s *XYZSensor) Get(axis string) (float64, bool) {
-	value, ok := s.phyphox.SensorsData[s.prefix+axis]
-	if !ok {
-		return 0, false
-	}
-
-	return value, true
+// Returns the Time value of the sensor from phyphox SensorsData
+func (s *XYZSensor) GetTime() (float64, bool) {
+	return s.Get("_time")
 }
 
 // Next Update() calls will fetch
