@@ -87,16 +87,15 @@ func (p *Phyphox) RegisterXYZSensor(sensor SensorType) (*XYZSensor, error) {
 	return nil, &ErrSensorUnknown{sensor}
 }
 
-/*
-Returns XYZSensor or VSensor representing a sensor in the experiment.
-
-Since VSensor has only one variable, it's automatically going to be fetched
-with Update()
-
-Since XYZSensor has several variables, none will be fetched with Update().
-In order to fetch data from the sensor, IncludeX, IncludeY or IncludeZ should
-be called.
-*/
+// Returns XYZSensor or VSensor representing a sensor in the experiment.
+//
+// Since VSensor has only one variable, it's automatically going to be fetched
+// with Update()
+//
+// Since XYZSensor has several variables, none will be fetched with Update().
+// In order to fetch data from the sensor, IncludeX, IncludeY or IncludeZ should
+// be called.
+//
 func (p *Phyphox) RegisterSensor(sensor SensorType) (any, error) {
 	if !p.HasSensor(sensor) {
 		return nil, &ErrSensorNotUsed{sensor}
@@ -128,7 +127,7 @@ func (p *Phyphox) HasSensor(sensor SensorType) bool {
 
 // Requests the remote host for the latest data.
 // The data will be saved to the SensorsData field
-func (p *Phyphox) Update() error {
+func (p *Phyphox) Fetch() error {
 	res, err := p.execute("/get?" + p.query)
 
 	buffer, ok := res["buffer"].(map[string]any)
@@ -163,10 +162,10 @@ func (p *Phyphox) Update() error {
 
 // Starts measuring.
 //
-// By default, Update() is called automatically
+// By default, Fetch() is called automatically
 func (p *Phyphox) Start() (bool, error) {
 	res, err := p.execute("/control?cmd=start")
-	p.Update()
+	p.Fetch()
 	return res["result"].(bool), err
 }
 
